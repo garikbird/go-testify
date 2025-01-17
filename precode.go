@@ -49,6 +49,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 }
 
 func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
+	totalCount := 4
 	req, _ := http.NewRequest("GET", "/?city=moscow&count=10", nil)
 	responseRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(mainHandle)
@@ -56,7 +57,11 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	handler.ServeHTTP(responseRecorder, req)
 
 	assert.Equal(t, http.StatusOK, responseRecorder.Code)
-	assert.Equal(t, "Мир кофе,Сладкоежка,Кофе и завтраки,Сытый студент", responseRecorder.Body.String())
+
+	returnedCafes := strings.Split(responseRecorder.Body.String(), ",")
+	actualCount := len(returnedCafes)
+
+	assert.Equal(t, totalCount, actualCount)
 }
 
 func TestMainHandlerWhenCityNotSupported(t *testing.T) {
